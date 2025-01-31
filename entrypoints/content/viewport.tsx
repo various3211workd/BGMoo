@@ -1,14 +1,17 @@
 import React, { useEffect } from "react";
 
-const ViewPort: React.FC<{ responseText: any }> = ({ responseText }) => {
+const ViewPort: React.FC<{
+  responseText: any;
+  setNowStartText: (music: string) => void;
+}> = ({ responseText, setNowStartText }) => {
   useEffect(() => {
     if (responseText) {
       observeText(responseText);
     }
   }, [responseText]);
 
-  const observeText = (responseText) => {
-    const observedTexts = responseText.map((item) => item.start_text);
+  const observeText = (responseText: any) => {
+    const observedTexts = responseText.map((item: any) => item.start_text);
 
     const activeElements = new Set<Element>();
 
@@ -19,7 +22,8 @@ const ViewPort: React.FC<{ responseText: any }> = ({ responseText }) => {
             const rect = entry.boundingClientRect;
             const viewportHeight = window.innerHeight;
 
-            console.log("viewportの中に入ったとき:", entry.target.textContent);
+            //console.log("viewportの中に入ったとき:", entry.target.textContent);
+            setNowStartText(entry.target.textContent);
             activeElements.add(entry.target);
           }
         });
@@ -29,7 +33,7 @@ const ViewPort: React.FC<{ responseText: any }> = ({ responseText }) => {
 
     const findAndObserveText = () => {
       document.querySelectorAll("p, span, div").forEach((el) => {
-        if (observedTexts.some((text) => el.textContent.includes(text))) {
+        if (observedTexts.some((text: any) => el.textContent.includes(text))) {
           observer.observe(el);
         }
       });

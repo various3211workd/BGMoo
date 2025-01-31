@@ -11,8 +11,16 @@ const Footer: React.FC<{
   onAddReference: (reference: { name: string; url: string }) => void;
   scrollPosition: number;
   musicSamples: any;
-}> = ({ onAddReference, scrollPosition, musicSamples }) => {
+  nowStartText: string;
+}> = ({ onAddReference, scrollPosition, musicSamples, nowStartText }) => {
   const [isAdding, setIsAdding] = useState(false);
+
+  // 音楽が切り替わったことを検知する
+  useEffect(() => {
+    if (nowStartText != "") {
+      console.log("nowStartText: %o", nowStartText);
+    }
+  }, [nowStartText]);
 
   useEffect(() => {
     const handleMouseOver = (event: MouseEvent) => {
@@ -262,8 +270,8 @@ const Footer: React.FC<{
               className={`font-bold py-2 px-4 rounded 
               ${
                 isAdding
-                  ? "bg-red-500 hover:bg-red-700 text-white"
-                  : "bg-blue-500 hover:bg-blue-700 text-white text-4xl"
+                  ? "bg-red-500 hover:bg-red-700"
+                  : "bg-blue-500 hover:bg-blue-700 text-4xl"
               }`}
               onClick={handleAddClick}
               variant="ghost"

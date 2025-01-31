@@ -21,6 +21,7 @@ export default () => {
   );
   const [scrollPosition, setScrollPosition] = useState(0);
   const [responseText, setResponseText] = useState(null); // responseTextを管理
+  const [nowStartText, setNowStartText] = useState("");
 
   const { i18n } = useTranslation();
   const { theme, toggleTheme } = useTheme();
@@ -94,13 +95,20 @@ export default () => {
     setReferences(references.filter((_, i) => i !== index));
   };
 
-  const handleSetResponseText = (response) => {
+  const handleSetResponseText = (response: any) => {
     setResponseText(response);
+  };
+
+  const handleSetNowPlayMusic = (music: string) => {
+    setNowStartText(music);
   };
 
   return (
     <div className={theme}>
-      <ViewPort responseText={responseText} />
+      <ViewPort
+        responseText={responseText}
+        setNowStartText={handleSetNowPlayMusic}
+      />
 
       {showContent && (
         <div className="fixed top-0 right-0 h-screen w-[400px] bg-background z-[1000000000000] rounded-l-xl shadow-2xl overflow-hidden">
@@ -128,6 +136,7 @@ export default () => {
             onAddReference={handleAddReference}
             scrollPosition={scrollPosition}
             musicSamples={responseText}
+            nowStartText={nowStartText}
           />
         </div>
       )}
