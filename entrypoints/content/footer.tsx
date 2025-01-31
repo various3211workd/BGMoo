@@ -14,13 +14,26 @@ const Footer: React.FC<{
   nowStartText: string;
 }> = ({ onAddReference, scrollPosition, musicSamples, nowStartText }) => {
   const [isAdding, setIsAdding] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(0.02);
+  const [isFirstPlay, setIsFirstPlay] = useState(true);
+  const [currentTrack, setCurrentTrack] = useState(musicSamples?.[0] || null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   // 音楽が切り替わったことを検知する
   useEffect(() => {
-    if (nowStartText != "") {
+    if (nowStartText !== "") {
       console.log("nowStartText: %o", nowStartText);
+      const matchedTrack = musicSamples.find(
+        (sample: any) => sample.start_text === nowStartText
+      );
+      if (matchedTrack) {
+        setCurrentTrack(matchedTrack);
+      }
     }
-  }, [nowStartText]);
+  }, [nowStartText, musicSamples]);
 
   useEffect(() => {
     const handleMouseOver = (event: MouseEvent) => {
@@ -49,11 +62,11 @@ const Footer: React.FC<{
       let currentElement: HTMLElement | null = target;
 
       while (currentElement) {
-        const tagName = currentElement.tagName.toLowerCase();
+        let selector = currentElement.tagName.toLowerCase();
+        //const tagName = currentElement.tagName.toLowerCase();
         const className = currentElement.className;
-        const id = currentElement.id;
 
-        let selector = tagName;
+        const id = currentElement.id;
         if (id) {
           selector += `#${id}`;
         } else if (className) {
@@ -65,7 +78,6 @@ const Footer: React.FC<{
 
       let href = "";
       if (target.querySelectorAll) {
-        // targetにquerySelectorAllが存在する場合
         const aElements = target.querySelectorAll("a");
         aElements.forEach((a) => {
           if (a.href) {
@@ -87,7 +99,7 @@ const Footer: React.FC<{
       const elements = document.querySelectorAll("a, button");
 
       elements.forEach((element) => {
-        element.style.pointerEvents = "none"; // クリック無効化
+        element.style.pointerEvents = "none";
       });
 
       setTimeout(() => {
@@ -98,7 +110,7 @@ const Footer: React.FC<{
       const elements = document.querySelectorAll("a, button");
 
       elements.forEach((element) => {
-        element.style.pointerEvents = "auto"; // または '' (初期値)
+        element.style.pointerEvents = "auto";
       });
 
       document.removeEventListener("mouseover", handleMouseOver);
@@ -114,33 +126,6 @@ const Footer: React.FC<{
   const handleAddClick = () => {
     setIsAdding(!isAdding);
   };
-
-  /*
-  music player
-  */
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(0.02);
-  const [isFirstPlay, setIsFirstPlay] = useState(true);
-
-  /*
-  const musicSamples = [
-    {
-      title: "シャイニングスター",
-      artist: "詩歩",
-      src: shining_star,
-    },
-    {
-      title: "Burning Heart",
-      artist: "KEI",
-      src: burning_heart,
-    },
-  ];
-  */
-
-  const [currentTrack, setCurrentTrack] = useState(musicSamples?.[0] || null);
-  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -160,7 +145,7 @@ const Footer: React.FC<{
       if (scrollPosition >= 450) {
         setCurrentTrack((prevTrack) => {
           const currentIndex = musicSamples.findIndex(
-            (track) => track.src === prevTrack?.src
+            (track: any) => track.src === prevTrack?.src
           );
           const nextIndex = currentIndex + 1;
           if (nextIndex < musicSamples.length) {
@@ -172,7 +157,7 @@ const Footer: React.FC<{
       } else {
         setCurrentTrack((prevTrack) => {
           const currentIndex = musicSamples.findIndex(
-            (track) => track.src === prevTrack?.src
+            (track: any) => track.src === prevTrack?.src
           );
           const prevIndex = currentIndex - 1;
           if (prevIndex >= 0) {
@@ -183,7 +168,7 @@ const Footer: React.FC<{
         });
       }
     }
-  }, [scrollPosition]);
+  }, [scrollPosition, musicSamples]);
 
   const togglePlay = () => {
     if (audioRef.current) {
@@ -191,7 +176,7 @@ const Footer: React.FC<{
         audioRef.current.pause();
       } else {
         audioRef.current.play();
-        setIsFirstPlay(false); // 最初の再生が行われたことを記録
+        setIsFirstPlay(false);
       }
       setIsPlaying(!isPlaying);
     }
@@ -248,7 +233,6 @@ const Footer: React.FC<{
                 <Play className="h-4 w-4" />
               )}
             </Button>
-
             <div className="flex items-center space-x-2 w-1/3">
               <span className="text-xs">{formatTime(currentTime)}/</span>
               <span className="text-xs">{formatTime(duration)}</span>
