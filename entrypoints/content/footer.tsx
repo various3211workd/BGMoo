@@ -18,11 +18,14 @@ const Footer: React.FC<{
     const handleMouseOver = (event: MouseEvent) => {
       if (!isAdding) return;
       const target = event.target as HTMLElement;
-      target.style.outline = "2px solid red";
+      target.style.outline = "2px solid rgba(166, 241, 224, 1)";
+      target.style.backgroundColor = "rgba(115, 199, 199, 0.2)";
+
       target.addEventListener(
         "mouseout",
         () => {
           target.style.outline = "";
+          target.style.backgroundColor = "";
         },
         { once: true }
       );
