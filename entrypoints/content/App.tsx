@@ -19,7 +19,6 @@ export default () => {
   const [references, setReferences] = useState<{ name: string; url: string }[]>(
     []
   );
-  const [scrollPosition, setScrollPosition] = useState(0);
   const [responseText, setResponseText] = useState(null); // responseTextを管理
   const [nowStartText, setNowStartText] = useState("");
 
@@ -66,25 +65,6 @@ export default () => {
     );
 
     initI18n();
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop =
-        window.pageYOffset || document.documentElement.scrollTop;
-
-      if (scrollTop >= 450) {
-        setScrollPosition(450);
-      } else {
-        setScrollPosition(0);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
   }, []);
 
   const handleAddReference = (reference: { name: string; url: string }) => {
@@ -134,7 +114,6 @@ export default () => {
           </main>
           <Footer
             onAddReference={handleAddReference}
-            scrollPosition={scrollPosition}
             musicSamples={responseText}
             nowStartText={nowStartText}
           />

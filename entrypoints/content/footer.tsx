@@ -1,39 +1,66 @@
-import { Button } from "@/components/ui/button";
 import React, { useState, useEffect, useRef } from "react";
-
+import { Button } from "@/components/ui/button";
 import { Play, Pause, Volume2, Plus, Save, X } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 
 const Footer: React.FC<{
   onAddReference: (reference: { name: string; url: string }) => void;
-  scrollPosition: number;
+  //scrollPosition: number;
   musicSamples: any;
   nowStartText: string;
-}> = ({ onAddReference, scrollPosition, musicSamples, nowStartText }) => {
+}> = ({ onAddReference, /*scrollPosition,*/ musicSamples, nowStartText }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.02);
   const [isFirstPlay, setIsFirstPlay] = useState(true);
-  const [currentTrack, setCurrentTrack] = useState(musicSamples?.[0] || null);
+  const [currentTrack, setCurrentTrack] = useState(
+    musicSamples?.[0]
+      ? {
+          ...musicSamples[0],
+          src: chrome.runtime.getURL(`audio/${musicSamples[0].src}`),
+        }
+      : null
+  );
+  const [trackCache, setTrackCache] = useState<{ [key: string]: string }>({});
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // 音楽が切り替わったことを検知して対応する音楽に切り替える。
+  // 初期読み込み時に全てのBGMをキャッシュ
+  const [isCacheMusic, setIsCacheMusic] = useState(false);
+  useEffect(() => {
+    if (musicSamples && !isCacheMusic) {
+      const cacheAllTracks = async () => {
+        const newCache = {};
+        for (const sample of musicSamples) {
+          const audioUrl = chrome.runtime.getURL(`audio/${sample.src}`);
+          console.log("audioUrl: ", audioUrl);
+          newCache[sample.src] = audioUrl;
+        }
+        setTrackCache(newCache);
+      };
+
+      cacheAllTracks();
+      setIsCacheMusic(true);
+    }
+  }, [musicSamples]);
+
+  // スクロール位置によって音楽を切り替える
   useEffect(() => {
     if (nowStartText !== "") {
-      console.log("nowStartText: %o", nowStartText);
       const matchedTrack = musicSamples.find((sample: any) =>
         nowStartText.includes(sample.start_text)
       );
       if (matchedTrack) {
-        console.log("matched!");
-        const audioUrl = chrome.runtime.getURL(`audio/${matchedTrack.src}`);
-        const updatedMatchedData = { ...currentTrack, src: audioUrl };
-        setCurrentTrack(updatedMatchedData);
+        if (trackCache[matchedTrack.src]) {
+          setCurrentTrack({
+            ...matchedTrack,
+            src: trackCache[matchedTrack.src],
+          });
+        }
       }
     }
-  }, [nowStartText, musicSamples]);
+  }, [nowStartText, musicSamples, trackCache]);
 
   useEffect(() => {
     const handleMouseOver = (event: MouseEvent) => {
@@ -140,6 +167,7 @@ const Footer: React.FC<{
     }
   }, [currentTrack]);
 
+  /*
   useEffect(() => {
     if (musicSamples) {
       if (scrollPosition >= 450) {
@@ -169,6 +197,7 @@ const Footer: React.FC<{
       }
     }
   }, [scrollPosition, musicSamples]);
+  */
 
   const togglePlay = () => {
     if (audioRef.current) {

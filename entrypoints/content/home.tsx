@@ -74,7 +74,7 @@ export function Home({ references, onRemoveReference, setResponseText }) {
         const responseText = {
           musics: [
             {
-              start_text: " ――これは本気でマズイことにな",
+              start_text: "これは本気でマズイことになった",
               music: "壮大",
               //music: "~/assets/music/maou_14_shining_star.mp3",
             },
@@ -85,6 +85,11 @@ export function Home({ references, onRemoveReference, setResponseText }) {
             },
             {
               start_text: "「ジャンルは異世界ファンタジー",
+              music: "壮大",
+              //music: "~/assets/music/maou_14_shining_star.mp3",
+            },
+            {
+              start_text: "指をわきわきさせながら今後を不",
               music: "壮大",
               //music: "~/assets/music/maou_14_shining_star.mp3",
             },
