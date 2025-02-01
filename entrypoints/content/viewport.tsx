@@ -23,7 +23,7 @@ const ViewPort: React.FC<{
             const viewportHeight = window.innerHeight;
 
             //console.log("viewportの中に入ったとき:", entry.target.textContent);
-            setNowStartText(entry.target.textContent);
+            setNowStartText(entry.target.textContent.slice(0, 20)); // 先頭20文字を返すようにする。(少し多めに取得することで、geminiAPIからのレスポンスの誤差に対応する)
             activeElements.add(entry.target);
           }
         });

@@ -8,7 +8,13 @@ export default defineConfig({
         action: {},
         name: '__MSG_extName__',
         description: '__MSG_extDescription__',
-        default_locale: "en"
+        default_locale: "en",
+        "web_accessible_resources": [
+        {
+            "resources": ["audio/*"],
+            "matches": ["<all_urls>"]
+        }
+        ]
     },
     vite: () => ({
         plugins: [react()],

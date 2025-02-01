@@ -74,17 +74,17 @@ export function Home({ references, onRemoveReference, setResponseText }) {
         const responseText = {
           musics: [
             {
-              start_text: "――これは本気でマズイことになっ",
+              start_text: " ――これは本気でマズイことにな",
               music: "壮大",
               //music: "~/assets/music/maou_14_shining_star.mp3",
             },
             {
-              start_text: "「よし、いいぞ俺。伊達に妄想",
+              start_text: "「よし、いいぞ俺。伊達に妄想し",
               music: "夢幻的（ファンタジー）",
               //music: "~/assets/music/maou_08_burning_heart.mp3",
             },
             {
-              start_text: "ジャンルは異世界ファンタジー。文",
+              start_text: "「ジャンルは異世界ファンタジー",
               music: "壮大",
               //music: "~/assets/music/maou_14_shining_star.mp3",
             },

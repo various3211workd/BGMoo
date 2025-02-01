@@ -4,9 +4,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { Play, Pause, Volume2, Plus, Save, X } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 
-import shining_star from "~/assets/music/maou_14_shining_star.mp3";
-import burning_heart from "~/assets/music/maou_08_burning_heart.mp3";
-
 const Footer: React.FC<{
   onAddReference: (reference: { name: string; url: string }) => void;
   scrollPosition: number;
@@ -22,15 +19,18 @@ const Footer: React.FC<{
   const [currentTrack, setCurrentTrack] = useState(musicSamples?.[0] || null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // 音楽が切り替わったことを検知する
+  // 音楽が切り替わったことを検知して対応する音楽に切り替える。
   useEffect(() => {
     if (nowStartText !== "") {
       console.log("nowStartText: %o", nowStartText);
-      const matchedTrack = musicSamples.find(
-        (sample: any) => sample.start_text === nowStartText
+      const matchedTrack = musicSamples.find((sample: any) =>
+        nowStartText.includes(sample.start_text)
       );
       if (matchedTrack) {
-        setCurrentTrack(matchedTrack);
+        console.log("matched!");
+        const audioUrl = chrome.runtime.getURL(`audio/${matchedTrack.src}`);
+        const updatedMatchedData = { ...currentTrack, src: audioUrl };
+        setCurrentTrack(updatedMatchedData);
       }
     }
   }, [nowStartText, musicSamples]);

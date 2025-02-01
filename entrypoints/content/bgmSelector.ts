@@ -37,10 +37,16 @@ const emosionList = [
 
 // カテゴリごとのBGMリスト
 const bgmLibrary = {
-  感動: [{title: "", artist: "", src: "kandou1.mp3", tag: ""}, {title: "", artist: "", src: "kandou2.mp3", tag: ""}, {title: "", artist: "", src: "kandou3.mp3", tag: ""}],
-  壮大: [{title: "", artist: "", src: "soudai1.mp3", tag: ""}, {title: "", artist: "", src: "soudai2.mp3", tag: ""}],
-  "夢幻的（ファンタジー）": [{title: "", artist: "", src: "fantasy1.mp3", tag: ""}, {title: "", artist: "", src: "fantasy2.mp3", tag: ""}],
+  /*
+  感動: [{title: "シャイニングスター", artist: "詩歩", src: "/", tag: ""}, {title: "Burning Heart", artist: "KEI", src: "/", tag: ""}],
+  壮大: [{title: "シャイニングスター", artist: "詩歩", src: "/", tag: ""}, {title: "Burning Heart", artist: "KEI", src: "/", tag: ""}],
+  "夢幻的（ファンタジー）": [{title: "シャイニングスター", artist: "詩歩", src: "/", tag: ""}, {title: "Burning Heart", artist: "KEI", src: "/", tag: ""}],
+  */
+  
   // 必要なカテゴリを追加
+  感動: [{title: "シャイニングスター", artist: "詩歩", src: "maou_14_shining_star.mp3", tag: ""}, {title: "Burning Heart", artist: "KEI", src: "maou_08_burning_heart.mp3", tag: ""}],
+  壮大: [{title: "シャイニングスター", artist: "詩歩", src: "maou_14_shining_star.mp3", tag: ""}, {title: "Burning Heart", artist: "KEI", src: "maou_08_burning_heart.mp3", tag: ""}],
+  "夢幻的（ファンタジー）": [{title: "シャイニングスター", artist: "詩歩", src: "maou_14_shining_star.mp3", tag: ""}, {title: "Burning Heart", artist: "KEI", src: "maou_08_burning_heart.mp3", tag: ""}],
 };
 
 
@@ -54,7 +60,7 @@ const BgmSelector = (responsetext: any) => {
       
     if (!bgmLibrary[music] || bgmLibrary[music].length === 0) {
       console.warn(`カテゴリ「${music}」に対応するBGMがありません`);
-      return { title: "none", artist: "none", src: "none", Tag: "none",  };
+      return { title: "none", artist: "none", src: "none", tag: "none",  };
     }
 
     let availableBgm = bgmLibrary[music].filter((b) => !usedBgm.has(b));
