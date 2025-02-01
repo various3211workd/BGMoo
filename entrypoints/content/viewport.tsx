@@ -1,17 +1,17 @@
 import React, { useEffect } from "react";
 
 const ViewPort: React.FC<{
-  responseText: any;
-  setNowStartText: (music: string) => void;
-}> = ({ responseText, setNowStartText }) => {
+  sampleMusic: any;
+  setNowStartText: (start_text: string) => void;
+}> = ({ sampleMusic, setNowStartText }) => {
   useEffect(() => {
-    if (responseText) {
-      observeText(responseText);
+    if (sampleMusic) {
+      observeText(sampleMusic);
     }
-  }, [responseText]);
+  }, [sampleMusic]);
 
-  const observeText = (responseText: any) => {
-    const observedTexts = responseText.map((item: any) => item.start_text);
+  const observeText = (sampleMusic: any) => {
+    const observedTexts = sampleMusic.map((item: any) => item.start_text);
 
     const activeElements = new Set<Element>();
 
