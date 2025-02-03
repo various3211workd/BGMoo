@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.module.css";
 import "../../assets/main.css";
 import Home from "./home";
@@ -14,7 +14,9 @@ import ViewPort from "./viewport";
 import { SendGeminiAPI } from "./sendGeminiApi";
 
 export default () => {
-  const [showContent, setShowContent] = useState(true);
+  const [showContent, setShowContent] = useState(
+    JSON.parse(localStorage.getItem("isOpenSidebar") === "true") || false
+  );
   const [sidebarType, setSidebarType] = useState<SidebarType>(SidebarType.home);
   const [headTitle, setHeadTitle] = useState("home");
   const [references, setReferences] = useState<{ name: string; url: string }[]>(
@@ -82,7 +84,7 @@ export default () => {
       if (matchedItem) {
         const getMusicSamples = async () => {
           const analyzeText = await SendGeminiAPI(matchedItem.path);
-          console.log(analyzeText);
+
           setSampleMusic(analyzeText);
         };
         getMusicSamples();
@@ -142,16 +144,18 @@ export default () => {
           <Footer musicSamples={sampleMusic} nowStartText={nowStartText} />
         </div>
       ) : (
-        <Sidebar
-          closeContent={() => {
-            setShowContent(!showContent);
-          }}
-          sideNav={(sidebarType: SidebarType) => {
-            setSidebarType(sidebarType);
-            setHeadTitle(sidebarType);
-          }}
-          showContent={showContent}
-        />
+        <div className="fixed top-0 right-0 h-screen bg-background z-[1000000000000] rounded-l-xl shadow-2xl">
+          <Sidebar
+            closeContent={() => {
+              setShowContent(!showContent);
+            }}
+            sideNav={(sidebarType: SidebarType) => {
+              setSidebarType(sidebarType);
+              setHeadTitle(sidebarType);
+            }}
+            showContent={showContent}
+          />
+        </div>
       )}
     </div>
   );
