@@ -5,7 +5,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { IoMdCloseCircle } from "react-icons/io";
 import { IoIosSettings } from "react-icons/io";
 import { RiDashboardFill } from "react-icons/ri";
 import { PanelRightClose, PanelRightOpen } from "lucide-react";
@@ -34,6 +33,7 @@ const Sidebar = ({
           href="#"
           onClick={() => {
             closeContent();
+            localStorage.setItem("isOpenSidebar", JSON.stringify(!showContent));
           }}
         >
           {showContent ? (
