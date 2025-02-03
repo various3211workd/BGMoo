@@ -1,3 +1,4 @@
+/*
 const emosionList = [
   "感動",
   "怪しい",
@@ -34,60 +35,61 @@ const emosionList = [
   "学校",
   "恋愛",
 ];
+*/
 
-// カテゴリごとのBGMリスト
-const bgmLibrary = {
-  感動: [
-    { title: "シャイニングスター", artist: "詩歩", src: "maou_14_shining_star.mp3", tag: "" },
-    { title: "Burning Heart", artist: "KEI", src: "maou_08_burning_heart.mp3", tag: "" },
-  ],
-  壮大: [
-    { title: "シャイニングスター", artist: "詩歩", src: "maou_14_shining_star.mp3", tag: "" },
-    { title: "Burning Heart", artist: "KEI", src: "maou_08_burning_heart.mp3", tag: "" },
-  ],
-  "夢幻的（ファンタジー）": [
-    { title: "シャイニングスター", artist: "詩歩", src: "maou_14_shining_star.mp3", tag: "" },
-    { title: "Burning Heart", artist: "KEI", src: "maou_08_burning_heart.mp3", tag: "" },
-  ],
-};
-
-const BgmSelector = (responsetext: any) => {
+const BgmSelector = async (responsetext: any) => {
   if (!responsetext) return;
 
-  // APIからデータを取得（仮のデータ）
-  const usedBgm = new Set<string>();
-  let previousBgm = null;
-  const observedTexts = responsetext.musics.map(({ music, start_text }) => {
-    console.log("start_text: %o", start_text);
+  try{
+    const LocalSoundList = await getLocalSoundList();
 
-    if (!bgmLibrary[music] || bgmLibrary[music].length === 0) {
-      console.warn(`カテゴリ「${music}」に対応するBGMがありません`);
-      return { title: "none", artist: "none", src: "none", tag: "none" };
-    }
+    // APIからデータを取得（仮のデータ）
+    const usedBgm = new Set<string>();
+    let previousBgm = null;
+    const observedTexts = responsetext.musics.map(({ music, start_text }) => {
+      console.log("start_text: %o", start_text);
 
-    let availableBgm = bgmLibrary[music].filter((b) => !usedBgm.has(b.src));
-    if (availableBgm.length === 0) availableBgm = [...bgmLibrary[music]]; // すべて使用済みならリセット
+      if (!LocalSoundList[music] || LocalSoundList[music].length === 0) {
+        console.warn(`カテゴリ「${music}」に対応するBGMがありません`);
+        return { title: "none", artist: "none", src: "none", tag: "none" };
+      }
 
-    let randomBgm;
-    do {
-      randomBgm = availableBgm[Math.floor(Math.random() * availableBgm.length)];
-    } while (randomBgm.src === previousBgm?.src && availableBgm.length > 1);
+      let availableBgm = LocalSoundList[music].filter((b) => !usedBgm.has(b.src));
+      if (availableBgm.length === 0) availableBgm = [...LocalSoundList[music]]; // すべて使用済みならリセット
 
-    usedBgm.add(randomBgm.src);
-    previousBgm = randomBgm;
+      let randomBgm;
+      do {
+        randomBgm = availableBgm[Math.floor(Math.random() * availableBgm.length)];
+      } while (randomBgm.src === previousBgm?.src && availableBgm.length > 1);
 
-    return {
-      title: randomBgm.title,
-      artist: randomBgm.artist,
-      src: randomBgm.src,
-      tag: randomBgm.tag,
-      start_text: start_text,
-    };
-  });
+      usedBgm.add(randomBgm.src);
+      previousBgm = randomBgm;
 
-  console.log(observedTexts);
+      return {
+        title: randomBgm.title,
+        artist: randomBgm.artist,
+        src: randomBgm.src,
+        tag: randomBgm.tag,
+        start_text: start_text,
+      };
+    })
 
-  return observedTexts;
+    return observedTexts;
+  }catch{}
 };
 
 export default BgmSelector;
+
+const getLocalSoundList = async () => {
+
+  try{
+    const response = await fetch(chrome.runtime.getURL("audio-samples.json"));
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  }catch{
+    return null;
+  }
+};
