@@ -76,7 +76,9 @@ const Home: React.FC<{
               <Card
                 key={index}
                 className={`text-left my-2 ${
-                  reference.url === window.location.href
+                  new RegExp(reference.url.replace(/\*/g, ".*")).test(
+                    window.location.href
+                  )
                     ? "border-4 border-cyan-400"
                     : ""
                 }`}
@@ -161,7 +163,7 @@ const Home: React.FC<{
                               const analyzeText = await SendGeminiAPI(
                                 reference.path
                               );
-                              setSampleMusic(analyzeText);
+                              setSampleMusic(await analyzeText);
                               setIsRunning(false);
                             }}
                             title="場面に合うBGMを設定する"
