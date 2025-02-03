@@ -151,11 +151,12 @@ const SelectElement: React.FC<{
 
   const [isHaveNum, setIsHaveNum] = useState(false);
   useEffect(() => {
-    const alreadyHaveNum = references.filter((item: any) =>
-      item.url.includes(window.location.href)
-    ).length;
+    const matchedItem = references.find((item: any) => {
+      const regex = new RegExp(item.url.replace(/\*/g, ".*"));
+      return regex.test(window.location.href);
+    });
 
-    if (alreadyHaveNum != 0) {
+    if (matchedItem) {
       setIsHaveNum(true);
     } else {
       setIsHaveNum(false);
