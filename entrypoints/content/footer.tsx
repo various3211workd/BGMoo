@@ -12,14 +12,7 @@ const Footer: React.FC<{
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.02);
   const [isFirstPlay, setIsFirstPlay] = useState(true);
-  const [currentTrack, setCurrentTrack] = useState(
-    musicSamples?.[0]
-      ? {
-          ...musicSamples[0],
-          src: chrome.runtime.getURL(`audio/${musicSamples[0].src}`),
-        }
-      : null
-  );
+  const [currentTrack, setCurrentTrack] = useState(null);
   const [trackCache, setTrackCache] = useState<{ [key: string]: string }>({});
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -38,6 +31,10 @@ const Footer: React.FC<{
 
       cacheAllTracks();
       setIsCacheMusic(true);
+      setCurrentTrack({
+        ...musicSamples[0],
+        src: trackCache[0],
+      });
     }
   }, [musicSamples]);
 
