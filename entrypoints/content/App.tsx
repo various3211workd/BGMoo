@@ -90,7 +90,13 @@ export default () => {
         getMusicSamples();
       }
     }
+
+    chrome.storage.sync.get(["token"], (result) => {
+      setIsAuth(result.token ? true : false);
+    });
   }, []);
+
+  const [isAuth, setIsAuth] = useState<boolean>(false);
 
   const handleAddReference = (reference: { name: string; url: string }) => {
     setReferences([...references, reference]);
@@ -128,6 +134,8 @@ export default () => {
               setHeadTitle(sidebarType);
             }}
             showContent={showContent}
+            isAuth={isAuth}
+            setIsAuth={setIsAuth}
           />
           <main className="mr-14 grid gap-4 p-4">
             {sidebarType === SidebarType.home && (

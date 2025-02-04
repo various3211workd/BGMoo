@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Tooltip,
   TooltipContent,
@@ -7,7 +7,15 @@ import {
 } from "@/components/ui/tooltip";
 import { IoIosSettings } from "react-icons/io";
 import { RiDashboardFill } from "react-icons/ri";
-import { PanelRightClose, PanelRightOpen } from "lucide-react";
+import {
+  Loader2,
+  LogIn,
+  LogOut,
+  PanelRightClose,
+  PanelRightOpen,
+} from "lucide-react";
+import loginWithGoogle from "./content/auth/login";
+import { Button } from "@/components/ui/button";
 
 export enum SidebarType {
   "home" = "home",
@@ -18,19 +26,42 @@ const Sidebar = ({
   sideNav,
   closeContent,
   showContent,
+  isAuth,
+  setIsAuth,
 }: {
   sideNav: (sidebarType: SidebarType) => void;
   closeContent?: () => void;
   showContent: boolean;
+  isAuth: any;
+  setIsAuth: any;
 }) => {
   const [sidebarType, setSidebarType] = useState<SidebarType>(SidebarType.home);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const logout = () => {
+    chrome.storage.sync.remove("token", () => {});
+    setIsAuth(false);
+  };
+
+  // ログインボタンをクリックしたときの処理
+  const handleLogin = async () => {
+    setIsLoading(true); // ローディング開始
+    try {
+      await loginWithGoogle(); // Google ログイン処理を待つ
+      setIsAuth(true); // ログイン成功後、認証済み状態にする
+    } catch (error) {
+      console.error("Login failed:", error);
+    } finally {
+      setIsLoading(false); // ローディング終了
+      alert("ログインに成功しました");
+    }
+  };
 
   return (
     <aside className="absolute inset-y-0 right-0 z-10 flex w-14 flex-col border-r bg-background border-l-[1px]">
       {closeContent && (
         <a
           className="hover:cursor-pointer flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors hover:text-foreground ml-auto mr-auto"
-          href="#"
           onClick={() => {
             closeContent();
             localStorage.setItem("isOpenSidebar", JSON.stringify(!showContent));
@@ -55,7 +86,6 @@ const Sidebar = ({
                       ? "rounded-full bg-primary text-lg font-semibold text-primary-foreground"
                       : ""
                   }`}
-                  href="#"
                   onClick={() => {
                     setSidebarType(SidebarType.home);
                     sideNav(SidebarType.home);
@@ -74,14 +104,56 @@ const Sidebar = ({
         <nav className="mt-auto flex flex-col items-center gap-4 px-2 py-5">
           <TooltipProvider>
             <Tooltip>
+              {!isAuth ? (
+                <>
+                  <TooltipTrigger asChild>
+                    <Button
+                      className={`hover:cursor-pointer flex items-center justify-center text-muted-foreground transition-colors`}
+                      onClick={handleLogin}
+                      variant="secondary"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <Loader2 className="animate-spin" />
+                      ) : (
+                        <LogIn />
+                      )}
+                      <span className="sr-only">Login</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">Login</TooltipContent>
+                </>
+              ) : (
+                <>
+                  <TooltipTrigger asChild>
+                    <a
+                      className={`hover:cursor-pointer flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors ${
+                        sidebarType == SidebarType.account
+                          ? "rounded-full bg-primary text-lg font-semibold text-primary-foreground"
+                          : ""
+                      } `}
+                      onClick={() => {
+                        logout();
+                      }}
+                    >
+                      <LogOut className={`h-5 w-5`} />
+                      <span className="sr-only">Logout</span>
+                    </a>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">Logout</TooltipContent>
+                </>
+              )}
+            </Tooltip>
+          </TooltipProvider>
+          <TooltipProvider>
+            <Tooltip>
               <TooltipTrigger asChild>
                 <a
-                  className={`hover:cursor-pointer flex h-9 w-9 items-center justify-center  text-muted-foreground transition-colors ${
+                  className={`hover:cursor-pointer flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors ${
                     sidebarType == SidebarType.settings
                       ? "rounded-full bg-primary text-lg font-semibold text-primary-foreground"
                       : ""
                   } `}
-                  href="#"
                   onClick={() => {
                     setSidebarType(SidebarType.settings);
                     sideNav(SidebarType.settings);
