@@ -164,47 +164,38 @@ const SelectElement: React.FC<{
   }, [references]);
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger className="cursor-not-allowed self-end">
-          <Button
-            className={`text-white font-bold rounded
-          ${
-            isAdding
-              ? "bg-red-500 hover:bg-red-700"
-              : "bg-blue-500 hover:bg-blue-700 text-sm"
-          }`}
-            onClick={handleAddClick}
-            variant="ghost"
-            disabled={isRunning || isHaveNum}
-          >
-            {isAdding ? (
-              <>
-                Cancel
-                <X className="h-4 w-4 font-bold" />
-              </>
-            ) : (
-              <>
-                {isRunning ? (
-                  <>
-                    <Loader2 className="animate-spin" />
-                    追加中
-                  </>
-                ) : (
-                  <>
-                    <Plus className="h-4 w-4 font-bold" />
-                    追加する
-                  </>
-                )}
-              </>
-            )}
-          </Button>
-        </TooltipTrigger>
-        {isHaveNum && (
-          <TooltipContent>このURLはすでに追加されています</TooltipContent>
-        )}
-      </Tooltip>
-    </TooltipProvider>
+    <Button
+      className={`text-white font-bold rounded
+      ${
+        isAdding
+          ? "bg-red-500 hover:bg-red-700"
+          : "bg-blue-500 hover:bg-blue-700 text-sm"
+      }`}
+      onClick={handleAddClick}
+      variant="ghost"
+      disabled={isRunning || isHaveNum}
+    >
+      {isAdding ? (
+        <>
+          Cancel
+          <X className="h-4 w-4 font-bold" />
+        </>
+      ) : (
+        <>
+          {isRunning ? (
+            <>
+              <Loader2 className="animate-spin" />
+              追加中
+            </>
+          ) : (
+            <>
+              <Plus className="h-4 w-4 font-bold" />
+              追加する
+            </>
+          )}
+        </>
+      )}
+    </Button>
   );
 };
 
