@@ -60,7 +60,9 @@ const Home: React.FC<{
   return (
     <div className="grid gap-4">
       <h3 className="flex justify-between items-center font-semibold leading-none tracking-tight text-base">
-        <div>{t("読む音楽のリスト")}</div>
+        <div className="text-[#2E5077] text-xl font-bold">
+          {t("読む音楽のリスト")}
+        </div>
         <div>
           <SelectElement
             onAddReference={onAddReference}
@@ -122,7 +124,7 @@ const Home: React.FC<{
                       ) : (
                         <>
                           <div className="flex">
-                            <p className="text-sm font-medium leading-none">
+                            <p className="text-sm leading-none font-semibold">
                               {reference.name}
                             </p>
                             <Edit
@@ -156,27 +158,31 @@ const Home: React.FC<{
                               );
                             }}
                           />
-                          <Button
-                            className=""
-                            onClick={async () => {
-                              setIsRunning(true);
-                              const analyzeText = await SendGeminiAPI(
-                                reference.path
-                              );
-                              setSampleMusic(await analyzeText);
-                              setIsRunning(false);
-                            }}
-                            title="場面に合うBGMを設定する"
-                            size="icon"
-                            variant="outline"
-                            disabled={isRunning}
-                          >
-                            {isRunning ? (
-                              <Loader2 className="animate-spin" />
-                            ) : (
-                              <Music className="h-4 w-4" />
-                            )}
-                          </Button>
+                          {new RegExp(reference.url.replace(/\*/g, ".*")).test(
+                            window.location.href
+                          ) && (
+                            <Button
+                              className=""
+                              onClick={async () => {
+                                setIsRunning(true);
+                                const analyzeText = await SendGeminiAPI(
+                                  reference.path
+                                );
+                                setSampleMusic(await analyzeText);
+                                setIsRunning(false);
+                              }}
+                              title="場面に合うBGMを設定する"
+                              size="icon"
+                              variant="outline"
+                              disabled={isRunning}
+                            >
+                              {isRunning ? (
+                                <Loader2 className="animate-spin" />
+                              ) : (
+                                <Music className="h-4 w-4" />
+                              )}
+                            </Button>
+                          )}
                         </div>
                       )}
                     </div>
