@@ -3,6 +3,6 @@
   margin: 0;
 }
 
-
-
-
+.top-shadow {
+  box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.2); /* 上方向に影をつける */
+}

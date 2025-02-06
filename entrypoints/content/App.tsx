@@ -6,10 +6,8 @@ import { SettingsPage } from "@/entrypoints/content/settings.tsx";
 import Sidebar, { SidebarType } from "@/entrypoints/sidebar.tsx";
 import { browser } from "wxt/browser";
 import ExtMessage, { MessageType } from "@/entrypoints/types.ts";
-import Header from "@/entrypoints/content/header.tsx";
 import Footer from "@/entrypoints/content/footer.tsx";
 import { useTranslation } from "react-i18next";
-import { useTheme } from "@/components/theme-provider.tsx";
 import ViewPort from "./viewport";
 import { SendGeminiAPI } from "./sendGeminiApi";
 
@@ -18,7 +16,6 @@ export default () => {
     JSON.parse(localStorage.getItem("isOpenSidebar") === "true") || false
   );
   const [sidebarType, setSidebarType] = useState<SidebarType>(SidebarType.home);
-  const [headTitle, setHeadTitle] = useState("home");
   const [references, setReferences] = useState<{ name: string; url: string }[]>(
     []
   );
@@ -26,7 +23,6 @@ export default () => {
   const [nowStartText, setNowStartText] = useState("");
 
   const { i18n } = useTranslation();
-  const { theme, toggleTheme } = useTheme();
 
   async function initI18n() {
     let data = await browser.storage.local.get("i18n");
@@ -61,8 +57,6 @@ export default () => {
           setShowContent(true);
         } else if (message.messageType == MessageType.changeLocale) {
           i18n.changeLanguage(message.content);
-        } else if (message.messageType == MessageType.changeTheme) {
-          toggleTheme(message.content);
         }
       }
     );
@@ -115,29 +109,31 @@ export default () => {
     setNowStartText(start_text);
   };
 
+  const handleSetIsAuth = () => {
+    setIsAuth(!isAuth);
+  };
+
   return (
-    <div className={theme}>
+    <div>
       <ViewPort
         sampleMusic={sampleMusic}
         setNowStartText={handleSetNowStartText}
       />
 
       {showContent ? (
-        <div className="fixed top-0 right-0 h-screen w-[400px] bg-background z-[1000000000000] rounded-l-xl shadow-2xl overflow-hidden">
-          <Header headTitle={headTitle} />
+        <div className="fixed top-0 right-0 h-screen w-[400px] bg-[#F6F4F0] z-10 rounded-l-xl shadow-2xl overflow-hidden">
           <Sidebar
             closeContent={() => {
               setShowContent(!showContent);
             }}
             sideNav={(sidebarType: SidebarType) => {
               setSidebarType(sidebarType);
-              setHeadTitle(sidebarType);
             }}
             showContent={showContent}
             isAuth={isAuth}
-            setIsAuth={setIsAuth}
+            setIsAuth={handleSetIsAuth}
           />
-          <main className="mr-14 grid gap-4 p-4">
+          <main className="mr-14 grid gap-4 p-4 bg-[#F6F4F0]">
             {sidebarType === SidebarType.home && (
               <Home
                 references={references}
@@ -149,22 +145,27 @@ export default () => {
             )}
             {sidebarType === SidebarType.settings && <SettingsPage />}
           </main>
-          <Footer musicSamples={sampleMusic} nowStartText={nowStartText} />
         </div>
       ) : (
-        <div className="fixed top-0 right-0 h-screen bg-background z-[1000000000000] rounded-l-xl shadow-2xl">
+        <div className="fixed top-0 right-0 h-screen bg-background z-30 rounded-l-xl shadow-2xl bg-[#2E5077]">
           <Sidebar
             closeContent={() => {
               setShowContent(!showContent);
             }}
             sideNav={(sidebarType: SidebarType) => {
               setSidebarType(sidebarType);
-              setHeadTitle(sidebarType);
             }}
             showContent={showContent}
+            isAuth={isAuth}
+            setIsAuth={handleSetIsAuth}
           />
         </div>
       )}
+      <Footer
+        musicSamples={sampleMusic}
+        setMusicSamples={setSampleMusic}
+        nowStartText={nowStartText}
+      />
     </div>
   );
 };

@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, Volume2, Music } from "lucide-react";
+import { Play, Pause, Volume2, Music, X } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 
 const Footer: React.FC<{
   musicSamples: any;
+  setMusicSamples: any;
   nowStartText: string;
-}> = ({ musicSamples, nowStartText }) => {
+}> = ({ musicSamples, setMusicSamples, nowStartText }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -40,7 +41,7 @@ const Footer: React.FC<{
 
   // スクロール位置によって音楽を切り替える
   useEffect(() => {
-    if (nowStartText !== "") {
+    if (nowStartText !== "" && musicSamples) {
       const matchedTrack = musicSamples.find((sample: any) =>
         nowStartText.includes(sample.start_text)
       );
@@ -103,11 +104,27 @@ const Footer: React.FC<{
   };
 
   return (
-    <footer className="absolute bottom-0 w-full flex my-4">
+    <footer className="fixed bottom-0 z-30 w-full flex bg-white top-shadow">
+      <Button
+        className="absolute top-0 right-0"
+        variant="ghost"
+        size="icon"
+        onClick={() => {
+          // 閉じるために全ての曲に関するstateを初期化
+          audioRef.current?.pause();
+          setCurrentTrack(null);
+          setTrackCache({});
+          setIsCacheMusic(false);
+          setMusicSamples(null);
+          setIsFirstPlay(false);
+        }}
+      >
+        <X className="x-2 y-2" />
+      </Button>
       <hr />
       <div className="flex items-center w-full flex-col">
         {musicSamples && (
-          <div className="flex justify-center items-center">
+          <div className="flex justify-center items-center mt-2">
             <div>
               <Music className="h-4 w-4" />
             </div>
@@ -119,7 +136,7 @@ const Footer: React.FC<{
             </div>
           </div>
         )}
-        <div className="flex w-full items-center justify-between space-x-2">
+        <div className="flex w-full items-center justify-center space-x-2">
           {musicSamples && (
             <>
               <audio
@@ -130,7 +147,7 @@ const Footer: React.FC<{
                 onEnded={() => setIsPlaying(false)}
                 loop
               />
-              <div className="flex-1 flex items-center">
+              <div className="flex items-center justify-center mb-2">
                 <Button variant="ghost" size="icon" onClick={togglePlay}>
                   {isPlaying ? (
                     <Pause className="h-4 w-4" />
@@ -146,7 +163,7 @@ const Footer: React.FC<{
                   <Volume2 className="h-4 w-4" />
                   <Slider
                     value={[volume]}
-                    max={0.1}
+                    max={0.01}
                     step={0.001}
                     onValueChange={handleVolumeChange}
                     className="w-24"

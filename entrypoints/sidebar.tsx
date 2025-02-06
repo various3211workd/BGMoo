@@ -9,13 +9,12 @@ import { IoIosSettings } from "react-icons/io";
 import { RiDashboardFill } from "react-icons/ri";
 import {
   Loader2,
-  LogIn,
   LogOut,
   PanelRightClose,
   PanelRightOpen,
+  User2,
 } from "lucide-react";
 import loginWithGoogle from "./content/auth/login";
-import { Button } from "@/components/ui/button";
 
 export enum SidebarType {
   "home" = "home",
@@ -53,15 +52,14 @@ const Sidebar = ({
       console.error("Login failed:", error);
     } finally {
       setIsLoading(false); // ローディング終了
-      alert("ログインに成功しました");
     }
   };
 
   return (
-    <aside className="absolute inset-y-0 right-0 z-10 flex w-14 flex-col border-r bg-background border-l-[1px]">
+    <aside className="absolute inset-y-0 right-0 flex w-14 z-[1000000000000000000] flex-col bg-[#2E5077]">
       {closeContent && (
         <a
-          className="hover:cursor-pointer flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors hover:text-foreground ml-auto mr-auto"
+          className="hover:cursor-pointer flex h-12 w-12 my-2 items-center justify-center text-white transition-colors hover:text-gray-200 hover:bg-[#223b58] ml-auto mr-auto rounded-full"
           onClick={() => {
             closeContent();
             localStorage.setItem("isOpenSidebar", JSON.stringify(!showContent));
@@ -81,7 +79,7 @@ const Sidebar = ({
             <Tooltip>
               <TooltipTrigger asChild>
                 <a
-                  className={`hover:cursor-pointer flex h-9 w-9 items-center justify-center  text-muted-foreground transition-colors ${
+                  className={`hover:cursor-pointer flex h-9 w-9 items-center justify-center text-white hover:text-gray-200 hover:bg-[#223b58] transition-colors ${
                     sidebarType == SidebarType.home
                       ? "rounded-full bg-primary text-lg font-semibold text-primary-foreground"
                       : ""
@@ -107,19 +105,17 @@ const Sidebar = ({
               {!isAuth ? (
                 <>
                   <TooltipTrigger asChild>
-                    <Button
-                      className={`hover:cursor-pointer flex items-center justify-center text-muted-foreground transition-colors`}
+                    <a
+                      className={`hover:cursor-pointer flex items-center justify-center text-white transition-colors hover:text-gray-200 hover:bg-[#223b58]`}
                       onClick={handleLogin}
-                      variant="secondary"
-                      disabled={isLoading}
                     >
                       {isLoading ? (
                         <Loader2 className="animate-spin" />
                       ) : (
-                        <LogIn />
+                        <User2 />
                       )}
                       <span className="sr-only">Login</span>
-                    </Button>
+                    </a>
                   </TooltipTrigger>
                   <TooltipContent side="right">Login</TooltipContent>
                 </>
@@ -127,7 +123,7 @@ const Sidebar = ({
                 <>
                   <TooltipTrigger asChild>
                     <a
-                      className={`hover:cursor-pointer flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors ${
+                      className={`hover:cursor-pointer flex h-9 w-9 items-center justify-center text-muted-foreground text-white transition-colors hover:text-gray-200 hover:bg-[#223b58] ${
                         sidebarType == SidebarType.account
                           ? "rounded-full bg-primary text-lg font-semibold text-primary-foreground"
                           : ""
@@ -149,7 +145,7 @@ const Sidebar = ({
             <Tooltip>
               <TooltipTrigger asChild>
                 <a
-                  className={`hover:cursor-pointer flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors ${
+                  className={`hover:cursor-pointer flex h-9 w-9 items-center justify-center text-white transition-colors hover:text-gray-200 hover:bg-[#223b58] ${
                     sidebarType == SidebarType.settings
                       ? "rounded-full bg-primary text-lg font-semibold text-primary-foreground"
                       : ""
