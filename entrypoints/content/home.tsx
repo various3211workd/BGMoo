@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Edit, FileText, Loader2, Music } from "lucide-react";
 import "./home.css";
 import SelectElement from "./selectElement";
-import { SendGeminiAPI } from "./sendGeminiApi";
+import { SendGeminiAPI } from "./sendAPI/sendGeminiApi";
 import { Switch } from "@/components/ui/switch";
 import { saveReferences } from "./sendAPI/referencesAPI";
 

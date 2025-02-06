@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Loader2, Plus, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { SendGeminiAPI } from "./sendGeminiApi";
+import { SendGeminiAPI } from "./sendAPI/sendGeminiApi";
 
 const SelectElement: React.FC<{
   onAddReference: (reference: { name: string; url: string }) => void;
