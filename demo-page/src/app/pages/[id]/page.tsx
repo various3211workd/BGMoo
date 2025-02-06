@@ -10,6 +10,7 @@ interface DynamicPageProps {
 }
 
 const StatusPage: FC<DynamicPageProps> = ({ params }) => {
+  const id = params.id;
   return (
     <>
       <Header />
@@ -21,9 +22,9 @@ const StatusPage: FC<DynamicPageProps> = ({ params }) => {
         ""
       )}
       */}
-        {params.id == 0 && <Content0 />}
-        {params.id == 1 && <Content1 />}
-        {params.id == 2 && <Content2 />}
+        {id == 0 && <Content0 />}
+        {id == 1 && <Content1 />}
+        {id == 2 && <Content2 />}
       </div>
       <Footer />
     </>
