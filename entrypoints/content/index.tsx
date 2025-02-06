@@ -3,11 +3,9 @@ import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import { i18nConfig } from "@/components/i18nConfig.ts";
 import initTranslations from "@/components/i18n.ts";
-import { ThemeProvider } from "@/components/theme-provider.tsx";
 
 export default defineContentScript({
   matches: ["<all_urls>"],
-  //matches: ["*://*/*"],
   cssInjectionMode: "ui",
   async main(ctx) {
     initTranslations(i18nConfig.defaultLocale, ["common", "content"]);
@@ -17,11 +15,7 @@ export default defineContentScript({
       onMount: (container) => {
         console.log(container);
         const root = ReactDOM.createRoot(container);
-        root.render(
-          <ThemeProvider>
-            <App />
-          </ThemeProvider>
-        );
+        root.render(<App />);
         return root;
       },
       onRemove: (root) => {

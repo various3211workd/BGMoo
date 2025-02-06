@@ -10,6 +10,9 @@ import Footer from "@/entrypoints/content/footer.tsx";
 import { useTranslation } from "react-i18next";
 import ViewPort from "./viewport";
 import { SendGeminiAPI } from "./sendGeminiApi";
+import { getReferences, saveReferences } from "./sendAPI/referencesAPI";
+import { Button } from "@/components/ui/button";
+import { signInWithGoogle } from "./sendAPI/auth";
 
 export default () => {
   const [showContent, setShowContent] = useState(
@@ -85,12 +88,20 @@ export default () => {
       }
     }
 
-    chrome.storage.sync.get(["token"], (result) => {
-      setIsAuth(result.token ? true : false);
+    chrome.storage.local.get(["userId", "token"], async (result) => {
+      if (result.userId && result.token) {
+        async () => {
+          const refs = await getReferences(result.userId, result.token);
+          setReferences(refs);
+        };
+      }
+    });
+    chrome.storage.local.get(["references"], async (result) => {
+      if (result.references) {
+        setReferences(result.references);
+      }
     });
   }, []);
-
-  const [isAuth, setIsAuth] = useState<boolean>(false);
 
   const handleAddReference = (reference: { name: string; url: string }) => {
     setReferences([...references, reference]);
@@ -98,19 +109,36 @@ export default () => {
       "references",
       JSON.stringify([...references, reference])
     );
+    saveReferences(references);
   };
 
   const handleRemoveReference = async (index: number) => {
     await setReferences(references.filter((_, i) => i !== index));
     localStorage.setItem("references", JSON.stringify(references));
+    saveReferences(references);
   };
 
   const handleSetNowStartText = (start_text: string) => {
     setNowStartText(start_text);
   };
 
-  const handleSetIsAuth = () => {
-    setIsAuth(!isAuth);
+  const handleLogin = async () => {
+    try {
+      const [userToken, userId] = await signInWithGoogle();
+      if (userToken && userId) {
+        chrome.storage.local.set({ userId: userId, token: userToken }, () => {
+          console.log("Data is saved.");
+        });
+
+        const refs = await getReferences(userId, userToken);
+        if (refs.lenght !== 0) {
+          setReferences(refs);
+        }
+        console.log("ログイン成功:");
+      }
+    } catch (error) {
+      console.error("ログイン失敗:");
+    }
   };
 
   return (
@@ -120,8 +148,16 @@ export default () => {
         setNowStartText={handleSetNowStartText}
       />
 
+      <Button
+        onClick={() => {
+          handleLogin();
+        }}
+      >
+        ボタン
+      </Button>
+
       {showContent ? (
-        <div className="fixed top-0 right-0 h-screen w-[400px] bg-[#F6F4F0] z-10 rounded-l-xl shadow-2xl overflow-hidden">
+        <div className="fixed top-0 right-0 h-screen w-[400px] bg-[#F6F4F0] z-20 rounded-l-xl shadow-2xl overflow-hidden">
           <Sidebar
             closeContent={() => {
               setShowContent(!showContent);
@@ -130,8 +166,6 @@ export default () => {
               setSidebarType(sidebarType);
             }}
             showContent={showContent}
-            isAuth={isAuth}
-            setIsAuth={handleSetIsAuth}
           />
           <main className="mr-14 grid gap-4 p-4 bg-[#F6F4F0]">
             {sidebarType === SidebarType.home && (
@@ -147,7 +181,7 @@ export default () => {
           </main>
         </div>
       ) : (
-        <div className="fixed top-0 right-0 h-screen bg-background z-30 rounded-l-xl shadow-2xl bg-[#2E5077]">
+        <div className="fixed top-0 right-0 h-screen bg-background z-50 rounded-l-xl shadow-2xl bg-[#2E5077]">
           <Sidebar
             closeContent={() => {
               setShowContent(!showContent);
@@ -156,11 +190,10 @@ export default () => {
               setSidebarType(sidebarType);
             }}
             showContent={showContent}
-            isAuth={isAuth}
-            setIsAuth={handleSetIsAuth}
           />
         </div>
       )}
+
       <Footer
         musicSamples={sampleMusic}
         setMusicSamples={setSampleMusic}

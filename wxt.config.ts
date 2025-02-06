@@ -17,7 +17,7 @@ export default defineConfig({
         {
             "resources": ["audio/*", "audio-samples.json", "success.html", "popup.js"],
             "matches": ["<all_urls>"]
-        }
+        },
         ]
     },
     vite: () => ({

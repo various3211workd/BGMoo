@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card.tsx";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import "./home.css";
 import SelectElement from "./selectElement";
 import { SendGeminiAPI } from "./sendGeminiApi";
 import { Switch } from "@/components/ui/switch";
+import { saveReferences } from "./sendAPI/referencesAPI";
 
 const Home: React.FC<{
   references: any;
@@ -54,6 +55,7 @@ const Home: React.FC<{
     localStorage.setItem("references", JSON.stringify(updatedReferences));
 
     setReferences(updatedReferences);
+    saveReferences(updatedReferences);
     setEditIndex(null);
   };
 
@@ -74,7 +76,7 @@ const Home: React.FC<{
       <div className="home-height overflow-auto">
         {references.length != 0 ? (
           <>
-            {references.map((reference, index) => (
+            {references.map((reference: any, index: number) => (
               <Card
                 key={index}
                 className={`text-left my-2 ${
@@ -112,7 +114,10 @@ const Home: React.FC<{
                           <div className="flex justify-center items-center">
                             <button
                               className="text-red-500 mr-12"
-                              onClick={() => onRemoveReference(index)}
+                              onClick={() => {
+                                onRemoveReference(index);
+                                setEditIndex(null);
+                              }}
                             >
                               削除
                             </button>

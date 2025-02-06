@@ -3,13 +3,6 @@ import { Loader2, Plus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { SendGeminiAPI } from "./sendGeminiApi";
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-  TooltipProvider,
-} from "@/components/ui/tooltip";
-
 const SelectElement: React.FC<{
   onAddReference: (reference: { name: string; url: string }) => void;
   setSampleMusic: any;

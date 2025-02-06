@@ -1,70 +1,51 @@
 export default defineBackground(() => {
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === "launchAuthFlow") {
-      const url = request.url;
+    if (request.action === "login") {
+      const redirectUri = chrome.identity.getRedirectURL();
 
-      chrome.identity.launchWebAuthFlow({ url, interactive: true }, async (redirectUrl) => {
-        if (chrome.runtime.lastError) {
-          console.error("Auth Flow Error:", chrome.runtime.lastError.message);
-          return;
-        }
-
-        if (!redirectUrl) {
-          console.error("リダイレクトURLが取得できませんでした");
-          return;
-        }
-
-        console.log("Redirect URL:", redirectUrl);
-
-        // 🔹 コールバックURLから認証コードを取得
-        const params = new URL(redirectUrl).searchParams;
-        const code = params.get("code");
-
-        if (!code) {
-          console.error("認証コードが見つかりません");
-          return;
-        }
-
-        try {
-          // 🔹 認証コードを使ってアクセストークンを取得
-          const tokenResponse = await fetch(`http://localhost:8080/auth/callback?code=${code}`);
-          
-          if (!tokenResponse.ok) throw new Error("トークン取得失敗");
-
-          /*
-          const { token } = await tokenResponse.json();
-
-          if (!token) {
-            console.error("トークンが空です");
-            return;
+      const authUrl = new URL("https://accounts.google.com/o/oauth2/auth");
+      authUrl.searchParams.set("client_id", import.meta.env.VITE_CLIENT_ID);
+      authUrl.searchParams.set("response_type", "code");  // `token` ではなく `code` を使う
+      authUrl.searchParams.set("redirect_uri", redirectUri);
+      authUrl.searchParams.set("scope", "email profile openid");
+  
+      chrome.identity.launchWebAuthFlow(
+        {
+          url: authUrl.toString(),
+          interactive: true,
+        },
+        (redirectUrl) => {
+          if (chrome.runtime.lastError || !redirectUrl) {
+            sendResponse({ success: false, error: chrome.runtime.lastError?.message || "認証エラー" });
+          } else {
+            // 認証コードを取得
+            const code = new URL(redirectUrl).searchParams.get("code");
+  
+            if (!code) {
+              sendResponse({ success: false, error: "認証コードの取得に失敗しました" });
+              return;
+            }
+  
+            // ここでバックエンドAPIにコードを送信し、アクセストークンに交換する
+            fetch(import.meta.env.VITE_API_URL + "/exchange_token", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ code, redirectUri }),
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                console.log("data: ",data)
+                sendResponse({ success: true, token: data.access_token, userId: data.userId });
+              })
+              .catch((err) => {
+                sendResponse({ success: false, error: err.message });
+              });
           }
-
-          // 🔹 chrome.storage にトークン保存
-          chrome.storage.sync.set({ token }, () => {
-            console.log("Token saved:", token);
-          });
-          */
-        } catch (error) {
-          console.error("トークン取得エラー:", error);
         }
-      });
+      );
+  
+      return true; // 非同期レスポンスを許可
     }
-
-    // 🔹 認証が成功したときにトークンを保存
-    if (request.action === "saveToken") {
-      chrome.storage.sync.set({ token: request.token }, () => {
-        console.log("Token saved:", request.token);
-      });
-      const test = chrome.storage.sync.get(["token"]);
-      console.log("test: ", test)
-    }
-
-    if (request.action === "logout") {
-      chrome.storage.sync.remove("token", () => {
-        console.log("User logged out");
-      });
-    }
-
     sendResponse({ status: true });
   });
 });

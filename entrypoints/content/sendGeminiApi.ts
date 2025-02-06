@@ -1,7 +1,7 @@
 import BgmSelector from "./bgmSelector";
 
 //const API_URL = "https://bun-hono-app-njfzvuu3da-an.a.run.app/"; // .envに記載して import.meta.env.WXT_**** で取得できなかったためベタ書。要修正
-const API_URL = "http://localhost:8080"
+const API_URL = import.meta.env.VITE_API_URL
 
 export const SendGeminiAPI = async (path: []) => {
   try {
