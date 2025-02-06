@@ -59,6 +59,34 @@ const Home: React.FC<{
     setEditIndex(null);
   };
 
+  console.log("references: ", references);
+  const [nowUrl, setNowUrl] = useState("");
+
+  useEffect(() => {
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+      if (request.url) {
+        // request.url を使って必要な処理を行う
+        setNowUrl(request.url);
+        sendResponse({ message: "URLを受信しました" });
+      }
+    });
+
+    // コンポーネントがアンマウントされる前にリスナーを解除する (推奨)
+    return () => {
+      chrome.runtime.onMessage.removeListener(
+        (request, sender, sendResponse) => {
+          if (request.url) {
+            console.log(
+              "バックグラウンドスクリプトから受信したURL:",
+              request.url
+            );
+            sendResponse({ message: "URLを受信しました" });
+          }
+        }
+      );
+    };
+  }, []);
+
   return (
     <div className="grid gap-4">
       <h3 className="flex justify-between items-center font-semibold leading-none tracking-tight text-base">
@@ -80,9 +108,7 @@ const Home: React.FC<{
               <Card
                 key={index}
                 className={`text-left my-2 ${
-                  new RegExp(reference.url.replace(/\*/g, ".*")).test(
-                    window.location.href
-                  )
+                  new RegExp(reference.url.replace(/\*/g, ".*")).test(nowUrl)
                     ? "border-4 border-cyan-400"
                     : ""
                 }`}
@@ -164,7 +190,7 @@ const Home: React.FC<{
                             }}
                           />
                           {new RegExp(reference.url.replace(/\*/g, ".*")).test(
-                            window.location.href
+                            nowUrl
                           ) && (
                             <Button
                               className=""

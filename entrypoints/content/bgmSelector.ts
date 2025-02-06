@@ -45,8 +45,8 @@ const BgmSelector = async (responsetext: any) => {
 
     // APIからデータを取得（仮のデータ）
     const usedBgm = new Set<string>();
-    let previousBgm = null;
-    const observedTexts = responsetext.musics.map(({ music, start_text }) => {
+    let previousBgm: any = null;
+    const observedTexts = responsetext.musics.map(({ music, start_text }: any) => {
       console.log("start_text: %o", start_text);
 
       if (!LocalSoundList[music] || LocalSoundList[music].length === 0) {

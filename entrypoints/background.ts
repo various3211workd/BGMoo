@@ -48,4 +48,16 @@ export default defineBackground(() => {
     }
     sendResponse({ status: true });
   });
+
+  chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (changeInfo.status === 'complete') {
+      chrome.tabs.sendMessage(tabId, { url: tab.url }, (response) => {
+        if (chrome.runtime.lastError) {
+          console.error(chrome.runtime.lastError);
+        } else {
+          console.log('コンテンツスクリプトからの応答:', response);
+        }
+      });
+    }
+  });
 });

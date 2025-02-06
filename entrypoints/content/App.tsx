@@ -9,15 +9,16 @@ import ExtMessage, { MessageType } from "@/entrypoints/types.ts";
 import Footer from "@/entrypoints/content/footer.tsx";
 import { useTranslation } from "react-i18next";
 import ViewPort from "./viewport";
-import { SendGeminiAPI } from "./sendGeminiApi";
+import { SendGeminiAPI } from "./sendAPI/sendGeminiApi";
 import { getReferences, saveReferences } from "./sendAPI/referencesAPI";
 import { Button } from "@/components/ui/button";
 import { signInWithGoogle } from "./sendAPI/auth";
 
 export default () => {
-  const [showContent, setShowContent] = useState(
-    JSON.parse(localStorage.getItem("isOpenSidebar") === "true") || false
+  const [showContent, setShowContent] = useState<boolean>(
+    JSON.parse(localStorage.getItem("isOpenSidebar")) || false
   );
+
   const [sidebarType, setSidebarType] = useState<SidebarType>(SidebarType.home);
   const [references, setReferences] = useState<{ name: string; url: string }[]>(
     []
