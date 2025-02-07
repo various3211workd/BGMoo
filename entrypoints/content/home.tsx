@@ -36,8 +36,22 @@ const Home: React.FC<{
   };
 
   const handleSave = (index: number) => {
+    /*
     const count = references.filter((item: any, i: number) => {
       return i !== index && item.url.includes(editUrl);
+    }).length;
+    */
+
+    const count = references.filter((item: any, i: number) => {
+      if (i === index) return false; // index で指定された要素は除外
+      const itemUrlRegex = new RegExp(item.url.replace(/\*/g, ".*")); // item.url を正規表現に変換
+      const editUrlRegex = new RegExp(editUrl.replace(/\*/g, ".*")); // editUrl を正規表現に変換
+
+      console.log("item.url: ", item.url);
+      console.log("editUrl: ", editUrl);
+      console.log("editUrlRegex: ", editUrlRegex);
+      console.log("itemUrlRegex: ", itemUrlRegex);
+      return itemUrlRegex.test(editUrl) || editUrlRegex.test(item.url);
     }).length;
 
     if (count > 0) {
@@ -59,7 +73,6 @@ const Home: React.FC<{
     setEditIndex(null);
   };
 
-  console.log("references: ", references);
   const [nowUrl, setNowUrl] = useState("");
 
   useEffect(() => {
